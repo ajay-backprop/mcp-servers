@@ -12,3 +12,4 @@ wheels/
 #database
 expenses.db
 .env
+github-mcp-server 

@@ -3,10 +3,12 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_core.messages import ToolMessage
-import json
+import json, os
 
 load_dotenv()
 
+github_token  = os.getenv("GITHUB_TOKEN")
+expense_token = os.getenv("EXPENSE_TOKEN")
 
 SERVERS = { 
     "math_server": {
@@ -23,9 +25,16 @@ SERVERS = {
         "transport": "streamable_http",  # if this fails, try "sse"
         "url": "https://expense-trackk.fastmcp.app/mcp",
         "headers": {
-        "Authorization": "Bearer fmcp_-gwf5enJiTOxyb14QrN-_Jw0T0ZBelAQWyHxWArtj9o"
+        "Authorization": f"Bearer {expense_token}"
     }
     },
+    "github": {
+            "transport": "streamable_http",
+            "url": "https://api.githubcopilot.com/mcp/",
+            "headers": {
+                "Authorization": f"Bearer {github_token}"
+            }
+        },
 }
 
 async def main():
@@ -37,10 +46,13 @@ async def main():
 
     named_tools = {}
     for tool in tools:
+        print(tool.name)
         named_tools[tool.name] = tool
+
     
-    print("Available tools: ", named_tools)
-    print(named_tools["add_expense"].args_schema)
+    # print("Available tools: ", named_tools)
+    # print(named_tools["add_expense"].args_schema)
+    print(named_tools["pull_request_read"].args_schema)
 
     llm = ChatGroq(model="llama-3.3-70b-versatile")
     llm_with_tools = llm.bind_tools(tools)
@@ -49,17 +61,29 @@ async def main():
     # prompt = "What is Python?"
     # prompt = "what is the remainder of 23434 divided by 9?"
     # prompt = "Use the expense tracker tool: Add an expense: 800 to my expenses for new tshirt purchased on 13th april"
+    # prompt = """
+    #     Call add_expense.
+
+    #     date: 2024-04-13
+    #     amount: 800
+    #     category: Clothing
+    #     note: new tshirt purchased
+
+    #     IMPORTANT:
+    #     amount must be numeric not string.
+    #     """
     prompt = """
-        Call add_expense.
+    You have access to GitHub tools.
 
-        date: 2024-04-13
-        amount: 800
-        category: Clothing
-        note: new tshirt purchased
+    Call pull_request_read.
 
-        IMPORTANT:
-        amount must be numeric not string.
-        """
+    Use exactly these arguments:
+
+    method: get
+    owner: openai
+    repo: openai-python
+    pullNumber: 1
+    """
 
     response = await llm_with_tools.ainvoke(prompt)
 
@@ -84,6 +108,18 @@ async def main():
 
         print("\nTool Result:", result)
 
+
+    final_response = await llm_with_tools.ainvoke(
+        [
+            ToolMessage(
+                tool_call_id=selected_tool_id,
+                content=json.dumps(result)
+            )
+        ]
+    )
+
+    print("\nFinal Response:")
+    print(final_response.content)
 
     # selected_tool = response.tool_calls[0]["name"]
     # selected_tool_args = response.tool_calls[0]["args"]
