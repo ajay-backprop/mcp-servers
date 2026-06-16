@@ -21,7 +21,7 @@ SERVERS = {
     },
     "expense-tracker": {
         "transport": "streamable_http",  # if this fails, try "sse"
-        "url": "https://ajaymcp.fastmcp.app/mcp",
+        "url": "https://expense-trackk.fastmcp.app/mcp",
         "headers": {
         "Authorization": "Bearer fmcp_-gwf5enJiTOxyb14QrN-_Jw0T0ZBelAQWyHxWArtj9o"
     }
@@ -40,6 +40,7 @@ async def main():
         named_tools[tool.name] = tool
     
     print("Available tools: ", named_tools)
+    print(named_tools["add_expense"].args_schema)
 
     llm = ChatGroq(model="llama-3.3-70b-versatile")
     llm_with_tools = llm.bind_tools(tools)
@@ -47,7 +48,18 @@ async def main():
     # prompt = "what is the product of 14 and 20 using math tool?"
     # prompt = "What is Python?"
     # prompt = "what is the remainder of 23434 divided by 9?"
-    prompt = "Use the expense tracker tool: Add an expense: 800 to my expenses for new tshirt purchased on 13th april"
+    # prompt = "Use the expense tracker tool: Add an expense: 800 to my expenses for new tshirt purchased on 13th april"
+    prompt = """
+        Call add_expense.
+
+        date: 2024-04-13
+        amount: 800
+        category: Clothing
+        note: new tshirt purchased
+
+        IMPORTANT:
+        amount must be numeric not string.
+        """
 
     response = await llm_with_tools.ainvoke(prompt)
 
@@ -65,9 +77,12 @@ async def main():
 
         print(f"\n -> Executing remote tool: {selected_tool}")
         print(" with args: ", selected_tool_args)
+        
 
         result = await named_tools[selected_tool].ainvoke(selected_tool_args)
         tool_messages.append(ToolMessage(tool_call_id=selected_tool_id, content=json.dumps(result)))
+
+        print("\nTool Result:", result)
 
 
     # selected_tool = response.tool_calls[0]["name"]

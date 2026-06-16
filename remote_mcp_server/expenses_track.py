@@ -200,7 +200,7 @@ BEARER_TOKEN = "fmcp_-gwf5enJiTOxyb14QrN-_Jw0T0ZBelAQWyHxWArtj9o"
 
 
 # Aapke deployed remote server ka URL
-REMOTE_URL = "https://ajaymcp.fastmcp.app"
+REMOTE_URL = "https://expense-trackk.fastmcp.app/mcp"
 
 print("🚀 Async Local Proxy Bridge Starting...", file=sys.stderr)
 
