@@ -24,12 +24,6 @@ mcp = FastMCP("ajay-ExpenseTracker")
 def init_db():
     with sqlite3.connect(DB_PATH) as c:
 
-        c.execute(
-            "INSERT OR IGNORE INTO expenses(date, type, amount, category) VALUES (?, ?, ?, ?)",
-            ("2000-01-01", "expense", 0, "test")
-        )
-        c.execute("DELETE FROM expenses WHERE category='test'")
-
         # Updated expenses table to handle both expenses and credits/income
         c.execute("""
             CREATE TABLE IF NOT EXISTS expenses(
@@ -49,6 +43,12 @@ def init_db():
                 amount REAL NOT NULL
             )
         """)
+
+        c.execute(
+            "INSERT OR IGNORE INTO expenses(date, type, amount, category) VALUES (?, ?, ?, ?)",
+            ("2000-01-01", "expense", 0, "test")
+        )
+        c.execute("DELETE FROM expenses WHERE category='test'")
 
 init_db()
 
