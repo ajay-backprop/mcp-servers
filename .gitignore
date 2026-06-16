@@ -11,3 +11,4 @@ wheels/
 
 #database
 expenses.db
+.env
