@@ -8,12 +8,12 @@ CATEGORIES_PATH = os.path.join(os.path.dirname(__file__), "categories.json")
 
 mcp = FastMCP("ajay-ExpenseTracker")
 
-try:
-    remote_server = FastMCP.as_proxy("https://expense-trackk.fastmcp.app/mcp", name="remote-tracker")
-    mcp.mount(remote_server) 
-    print("✓ Remote proxy successfully mounted!")
-except Exception as e:
-    print(f"⚠️ Remote proxy connect nahi ho paya: {e}")
+# try:
+#     remote_server = FastMCP.as_proxy("https://expense-trackk.fastmcp.app/mcp", name="remote-tracker")
+#     mcp.mount(remote_server) 
+#     print("✓ Remote proxy successfully mounted!")
+# except Exception as e:
+#     print(f"⚠️ Remote proxy connect nahi ho paya: {e}")
 
 def init_db():
     with sqlite3.connect(DB_PATH) as c:
