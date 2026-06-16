@@ -2,9 +2,15 @@ import random
 from fastmcp import FastMCP
 import os
 import sqlite3
+import tempfile
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "expenses.db")
-CATEGORIES_PATH = os.path.join(os.path.dirname(__file__), "categories.json")
+# DB_PATH = os.path.join(os.path.dirname(__file__), "expenses.db")
+# CATEGORIES_PATH = os.path.join(os.path.dirname(__file__), "categories.json")
+
+TEMP_DIR = tempfile.gettempdir()
+DB_PATH = os.path.join(TEMP_DIR, "expenses.db")
+
+print("DB PATH =", DB_PATH)
 
 mcp = FastMCP("ajay-ExpenseTracker")
 
@@ -17,6 +23,13 @@ mcp = FastMCP("ajay-ExpenseTracker")
 
 def init_db():
     with sqlite3.connect(DB_PATH) as c:
+
+        c.execute(
+            "INSERT OR IGNORE INTO expenses(date, type, amount, category) VALUES (?, ?, ?, ?)",
+            ("2000-01-01", "expense", 0, "test")
+        )
+        c.execute("DELETE FROM expenses WHERE category='test'")
+
         # Updated expenses table to handle both expenses and credits/income
         c.execute("""
             CREATE TABLE IF NOT EXISTS expenses(
