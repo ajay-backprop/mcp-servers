@@ -5,7 +5,7 @@ import sqlite3
 import tempfile
 
 # DB_PATH = os.path.join(os.path.dirname(__file__), "expenses.db")
-# CATEGORIES_PATH = os.path.join(os.path.dirname(__file__), "categories.json")
+CATEGORIES_PATH = os.path.join(os.path.dirname(__file__), "categories.json")
 
 TEMP_DIR = tempfile.gettempdir()
 DB_PATH = os.path.join(TEMP_DIR, "expenses.db")
